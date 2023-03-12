@@ -11,6 +11,7 @@ using ProcurandoApartamento.Test.Setup;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using ProcurandoApartamento.Domain.Services.Interfaces;
 
 namespace ProcurandoApartamento.Test.Controllers
 {
@@ -22,7 +23,7 @@ namespace ProcurandoApartamento.Test.Controllers
             _client = _factory.CreateClient();
 
             _apartamentoRepository = _factory.GetRequiredService<IApartamentoRepository>();
-
+            _apartamentoService = _factory.GetRequiredService<IApartamentoService>();
 
             InitTest();
         }
@@ -42,7 +43,7 @@ namespace ProcurandoApartamento.Test.Controllers
         private readonly AppWebApplicationFactory<TestStartup> _factory;
         private readonly HttpClient _client;
         private readonly IApartamentoRepository _apartamentoRepository;
-
+        private readonly IApartamentoService _apartamentoService;
         private Apartamento _apartamento;
 
 
@@ -220,6 +221,32 @@ namespace ProcurandoApartamento.Test.Controllers
             apartamento1.Should().NotBe(apartamento2);
             apartamento1.Id = 0;
             apartamento1.Should().NotBe(apartamento2);
+        }
+
+        [Fact]
+        public async void MelhorApartamentoAcademiaMercado_DeveRetornarQuadra1()
+        {
+            // Arrange
+            var estabelecimentos = new []{ "ACADEMIA", "MERCADO" };
+
+            // Act
+            var result = await _apartamentoService.MelhorApartamento(estabelecimentos);
+
+            // Assert
+            Assert.Equal("Quadra 1", result);
+        }
+
+        [Fact]
+        public async void MelhorApartamentoAcademia_DeveRetornarQuadra2()
+        {
+            // Arrange
+            var estabelecimentos = new []{ "ACADEMIA" };
+
+            // Act
+            var result = await _apartamentoService.MelhorApartamento(estabelecimentos);
+
+            // Assert
+            Assert.Equal("Quadra 2", result);
         }
     }
 }

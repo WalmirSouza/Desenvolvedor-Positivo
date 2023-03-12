@@ -17,7 +17,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ProcurandoApartamento.Controllers
 {
-    
+
     [Route("api/apartamentos")]
     [ApiController]
     public class ApartamentosController : ControllerBase
@@ -68,6 +68,14 @@ namespace ProcurandoApartamento.Controllers
             _log.LogDebug($"REST request to delete Apartamento : {id}");
             await _apartamentoService.Delete(id);
             return NoContent().WithHeaders(HeaderUtil.CreateEntityDeletionAlert(EntityName, id.ToString()));
+        }
+
+        [HttpGet("{estabelecimentos}")]
+        public async Task<IActionResult> MelhorApartamento([FromQuery] string[] estabelecimentos)
+        {
+            _log.LogDebug($"REST request to get MelhorApartamento : {string.Join(",", estabelecimentos)}");
+            var quadra = await _apartamentoService.MelhorApartamento(estabelecimentos);
+            return Ok(new { quadra });
         }
     }
 }
